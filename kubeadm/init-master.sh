@@ -6,10 +6,9 @@ sudo systemctl enable kubelet
 
 kubeadm init \
   --apiserver-advertise-address=$MASTER_NODE_IP \
-  --pod-network-cidr=$K8S_POD_NETWORK_CIDR \
-  --ignore-preflight-errors=NumCPU \
-  --skip-phases=addon/kube-proxy \
   --control-plane-endpoint $MASTER_NODE_IP \
+  --skip-phases=addon/kube-proxy \
+  --ignore-preflight-errors=NumCPU \
 
 echo ">>> CONFIGURE KUBECTL"
 
@@ -19,7 +18,10 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 mkdir -p /home/vagrant/.kube
 sudo cp -f /etc/kubernetes/admin.conf /home/vagrant/.kube/config
-sudo chown 900:900 /home/vagrant/.kube/config
+sudo chown $(id -u):$(id -g) /home/vagrant/.kube/config
+
+sudo chown -R vagrant /home/vagrant/.kube
+sudo chgrp -R vagrant /home/vagrant/.kube
 
 sudo cp -i /etc/kubernetes/admin.conf /vagrant/kubeadm/admin.conf
 
@@ -36,7 +38,7 @@ sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
 sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
 rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 
-sudo cilium install
+# sudo cilium install
 
 echo ">>> GET WORKER JOIN COMMAND "
 

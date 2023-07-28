@@ -1,0 +1,5 @@
+.vagrant
+cilium
+
+kubeadm/init-worker.sh
+kubeadm/admin.conf

@@ -1,8 +1,10 @@
 domain = "kubernetes.lab"
-control_plane_endpoint = "k8s-master." + domain + ":6443"
-pod_network_cidr = "10.244.0.0/16"
+control_plane_port = "6443"
+control_plane_endpoint = "k8s-master." + domain + ":" + control_plane_port
+pod_network_cidr = "10.0.0.0/16"
 master_node_ip = "192.168.1.210"
 version = "1.27.0-00"
+bridge_nic_name = "enp3s0"
 
 Vagrant.configure("2") do |config|
     config.ssh.insert_key = false
@@ -10,7 +12,7 @@ Vagrant.configure("2") do |config|
     config.vm.define "master" do |master|
       master.vm.box = "ubuntu/focal64"
       master.vm.hostname = "k8s-master.#{domain}"
-      master.vm.network "public_network", bridge: 'enp3s0', ip: "#{master_node_ip}"
+      master.vm.network "public_network", bridge: "#{bridge_nic_name}", ip: "#{master_node_ip}"
       master.vm.provision "shell", env: {"DOMAIN" => domain, "MASTER_NODE_IP" => master_node_ip} ,inline: <<-SHELL 
       echo "$MASTER_NODE_IP k8s-master.$DOMAIN k8s-master" >> /etc/hosts 
       SHELL
@@ -25,7 +27,7 @@ Vagrant.configure("2") do |config|
       config.vm.define "worker-#{nodeIndex}" do |worker|
         worker.vm.box = "ubuntu/focal64"
         worker.vm.hostname = "k8s-worker-#{nodeIndex}.#{domain}"
-        worker.vm.network "public_network", bridge: 'enp3s0', ip: "192.168.1.21#{nodeIndex}"
+        worker.vm.network "public_network", bridge: "#{bridge_nic_name}", ip: "192.168.1.21#{nodeIndex}"
         worker.vm.provision "shell", env: {"DOMAIN" => domain, "MASTER_NODE_IP" => master_node_ip} ,inline: <<-SHELL 
         echo "$MASTER_NODE_IP k8s-master.$DOMAIN k8s-master" >> /etc/hosts 
         SHELL
