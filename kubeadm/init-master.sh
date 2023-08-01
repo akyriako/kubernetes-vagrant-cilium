@@ -39,6 +39,8 @@ sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
 rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 
 sudo cilium install
+sudo cilium hubble enable
+sudo cilium hubble ebable --ui
 
 echo ">>> GET WORKER JOIN COMMAND "
 

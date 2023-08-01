@@ -22,6 +22,8 @@ Vagrant.configure("2") do |config|
         SHELL
       end
       master.vm.provision "shell", path:"kubeadm/init-master.sh", env: {"K8S_CONTROL_PLANE_ENDPOINT" => control_plane_endpoint, "K8S_POD_NETWORK_CIDR" => pod_network_cidr, "MASTER_NODE_IP" => master_node_ip}
+      master.vm.provision "shell", path:"helm/install.sh"
+      master.vm.provision "shell", path:"monitoring/metrics-server/install.sh"
     end
     (1..3).each do |nodeIndex|
       config.vm.define "worker-#{nodeIndex}" do |worker|
